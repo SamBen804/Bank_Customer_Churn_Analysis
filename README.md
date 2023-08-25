@@ -2,13 +2,13 @@
 
 ## Business Understanding
 
-Stakeholder: Bank Owners and Managers that want to better understand if there is an identifiable pattern that we can find that will help to predict whether or not a customer will leave the bank.
+Stakeholder: Bank owners and managers that want to better understand if there is an identifiable pattern that will help to predict whether or not a customer will leave the bank.
 
 ## Data Understanding
 
 The data used in this project is sourced from [Kaggle](https://www.kaggle.com/datasets/radheshyamkollipara/bank-customer-churn).
 
-The dataset contains 18 columns housing 10,000 unique bank customer records. Generally speaking, the columns in this dataset contain various demographic measures, like age and country where the customer is living, along with recorded metrics that the bank is tracking like the Balance in each customer's account and how long the customer has held an account at the bank. A detailed description of each column was provided by the auther of the dataset, and I have copied it below:
+The dataset contains 18 columns with 10,000 unique bank customer records. Generally speaking, the columns in this dataset contain various demographic measures, like age and country where the customer is living, along with recorded metrics that the bank is tracking like the balance in each customer's account and how long the customer has held an account at the bank. A detailed description of each column was provided by the auther of the dataset, and I have copied it below:
 
 #### Column Descriptions - from Kaggle:
 - RowNumber—corresponds to the record (row) number and has no effect on the output.
@@ -34,14 +34,17 @@ The dataset contains 18 columns housing 10,000 unique bank customer records. Gen
 
 ### Exploratory Data Analysis Results
 - The data does not have any null values to address.
+
 - There are unneccessary columns that will need to be dropped:
     - RowNumber: This appears to be a duplicate index.
     - CustomerId: We are not analyzing specifc customer records, therefore we would not need to keep any information identifying individuals
     - Surname: similar information to the CustomerId column, we do not need individuals' information for this analysis.
+
 - Certain 'object' type columns containing categorical variables need to be dealt with before being added to a model.
     - Geography: Spain, France, Germany
     - Gender: Male, Female
     - Card Type: DIAMOND, GOLD, SILVER, PLATINUM
+
 - There are numeric columns that contain values that appear to be binary or their values may be ordinal.
     - Binary columns: 'HasCrCard', 'IsActiveMember', 'Exited', 'Complain' 
     - Ordinal column: 'Satisfaction Score'
@@ -70,15 +73,15 @@ The X values, or features, in this first model represent the independent variabl
 
 Next we will run a train_test_split, in order to separate our data into a training set that we can use to train our model, and a testing set, which will remain unseen until the end of this process, when a final model iteration is chosen.
 
-Checking the value_counts and normalizing the results, below, gives us a look at the distribution of the positive (1s) and negative (0s) values contained in this column. Note that we will see a similar value throughout this first modeling process based on how we configure the dummy classifier model type.
+Checking the value_counts and normalizing the results, gives us a look at the distribution of the positive (1s) and negative (0s) values contained in this column (20/80). Note that we will see a similar value throughout this first modeling process based on how we configure the dummy classifier model type.
 
-Now we will instantiate 'model_1' as a DummyClassifier, setting the strategy to 'most_frequent' so we can get a very basic first model. Then we fit the model and check that the model is correctly predicting all 0's (the most frequent value in the target column). 
+Now we will instantiate 'model_1' as a DummyClassifier, setting the strategy to identify churned values every time so we can get a very basic first model. Then we fit the model and check that the model is correctly predicting all 1's. 
 
-Checking the accuracy score, we find that this dummy model is able to predict that a customer IS NOT churning (0) at ~80% accuracy, which is similar, almost equal to the value we found running a value_counts on the 'Exited' column alone.
+Checking the accuracy score, we find that this dummy model is able to predict that a customer IS churning (1) at ~20% accuracy, which is similar, almost equal to the value we found running a value_counts on the 'Exited' column alone.
 
-As expected, the cross validated score for this dummy model is ~80% too, meaning that even re-distirbuting the training data into multiple iterations within the original split of training data did not yield different results. Cross validating can often expose errors in splitting that can occur randomly when a train_test_split is performed. In this case, no such anomolys appear to be present.
+As expected, the cross validated score for this dummy model is ~20% too, meaning that even re-distirbuting the training data into multiple iterations within the original split of training data did not yield different results. Cross validating can often expose errors in splitting that can occur randomly when a train_test_split is performed. In this case, no such anomolys appear to be present.
 
-To visualize the results of this model, we will plot a confusion matrix. We can see that the model accurately predicted 5982 customers as staying (0), while also incorrectly predicting that the other 1518 customers would stay, when they actually churned or left the Bank.
+To visualize the results of this model, we will plot a confusion matrix. We can see that the model accurately predicted 1518 customers as leaving, while also incorrectly predicting that the other 5982 customers would leave, when they actually stayed with the Bank.
 
 Another method to check how well our model is predicting values, is to plot a ROC curve - pictured below, this curve appears as a straight line becasue this model iteration is predicting ONLY the most frequent (0) values, the area under the curve is .5, the lowest it can be. 
 
@@ -92,11 +95,11 @@ We will fit our Scaler to the training data ONLY, but still need to tranform our
 
 For model_2, we will be using logistic regression to model our features' effects on our target variable. This model should account for the individual feature's effects better than the dummy model above that made a generalized assumption that ALL values would negative in our target (0s). 
 
-Checking the accuracy score of model_2 appears significantly high, with 1.0 being assigned to a 'perfect' model. This indicates that some mix of features (or one significantly correlated feature) are able to VERY accurately predict the value in the target column. Let's run a few additional tests to see if this model is just overfit or if it is actually performing at a near perfect level:
+Checking the accuracy score of model_2: 0.9988, is significantly high, with 1.0 being assigned to a 'perfect' model. This indicates that some mix of features (or one significantly correlated feature) are able to VERY accurately predict the value in the target column. Next I run a few additional tests to see if this model is just overfit or if it is actually performing at a near perfect level.
 
 Visualizing this nearly perfect set of predictions in two different ways, to confirm the results found above. From viewing the confusion matrices, it appears that only 2 customers were predicted to stay when they actually left and only 7 customers were exepected to churn, when they actually stayed.
 
-Cross validating our model's results corroborates our findings along with each of the subsequent scores below: 0.9987999999999999
+Cross validating our model's results corroborates our findings along with each of the subsequent score: 0.9987
 
 A recall score of ~.9987 tells us that the model rarely (in this case only twice), incorrectly predicted that a customer would not churn, when in fact they did leave. This score is calcluated as a ratio of correct predictions of customers leaving (1516) divided by the total number of customers that ultimately left (1516 + 2).
 
@@ -120,10 +123,6 @@ F1:         0.9970404472213088
         - Was the complaint addressed in a timely manner?
         - What improvements can be made to the customer experience to avoid future complaints and poor customer service received when a customer is frustrated?
     - Another option is to recognize the significance of this feature and complete the analysis above separate from the model, so we may be better able to understand if there are other features contributing to the likelihood that a customer will churn. Moving into our next model iterations, we will be dropping the 'Complain' column in order to best identify any additional features that may have larger impacts on the churn rate.
-
-### Recommendation 1:
-- When including the 'Complain' column data, we are able to almost perfectly predict whether or not a customer will churn.
-- Essentially, if a customer complains, then they are VERY likely to leave the bank and should have their complaint addressed appropriately OR they will leave.
 
 ### Model 3: Logisitc Regression - Numeric Features Only + Dropping 'Complain'
 
@@ -149,11 +148,11 @@ The accuracy score above is around 81% (a slight imprvement from model 1) becaus
 ### Model 4: Logistic Regression - Incorporation of Categorical Features, 'Complain' Column Remains Dropped
 Now we need to create an X variable that includes all the columns, categorical AND numeric that still drops our target and the 'Complain' columns.
 
-To appropriately preprocess the categorical variables in this dataset, I chose to OneHotEncode the columsn containing categorical information, convert it to a dataframe and then concatinate this data with scaled numeric data (less the 'Complain' column). Training and testing data underwent these same transformations in order to maintain consistency throughout the analysis.
+To appropriately preprocess the categorical variables in this dataset, I chose to OneHotEncode the columns containing categorical information, convert it to a dataframe and then concatinate this data with scaled numeric data (less the 'Complain' column). Training and testing data underwent these same transformations in order to maintain consistency throughout the analysis.
 
 For this model, we will use the default LogisticRegression parameters when we instantiate the model:
 
-As we identified above, we want to focus on Recall, so I've cross-validated the recall score for this set of training data to ensure it aligns with the overall training data recall score of 0.2068568698975161
+As we identified above, we want to focus on Recall, so I've cross-validated the recall score for this set of training data to ensure it aligns with the overall training data recall score of 0.2068568698975161.
 
 #### Model 4: Training Data Scores
 -----------------------------
