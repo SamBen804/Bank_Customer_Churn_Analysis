@@ -1,36 +1,21 @@
 # Bank_Customer_Churn_Analysis
 
-## Business Understanding
+## Overview
 
-Stakeholder: Bank owners and managers that want to better understand if there is an identifiable pattern that will help to predict whether or not a customer will leave the bank.
+To date, Flatiron Bank has a churn rate of 20% of its customers. The bank owners are curious if there is a dicernable pattern in a customer's demographic profile or in recorded interactions with the bank's customer sericie that would flag that customer as a high risk of leaving the bank. Through Logistic Regression techniques, I was able to identify the following key features: if a customer has a complaint recorded, if the customer is female, if the customer is older relative to other active customers. Initally, the regression models were almost perfectly classifying whether or not a customer would churn due to the single binary feature that records whether or not the custmer filed a complaint - clearly this is the most important feature, which makes sense, but to continue including this feature in further analysis mutes the other features' importances, so I ultimately removed this feature as I built additional model iterations. I focused on increasing the recall score of the model, as this reduces False Negative outcomes, which represent missed opportunities for the bank to reach out to customers that are going to leave. Without the the "Complaint Recorded" feature, the final model performed with a recall score of ~.68 (compared to ~.99 with "Complaint Recorded" included). Based on the modeling results, I recommend first that the bank managers revitalize the customer service aspect of the compnlaint process and dive deeper into the content and causes for these complaints. Next, I recommend the bank review it's customer engagement practices with its older customers and particluarly with its older female customers, as it customers characterized by these demogrpahics churn at a higher rate relative to active, younger and male customers.
+
+
+## Business Problem
+
+Flatiron Bank's owners have tasked the management team with identifying any patterns that may exist indicating when or if a customer will churn. Currently, the customer churn rate is about 20% and the owners hope by idetnifying key features of the churned customers' profiles, they will gain insight about why these people are leaving in order to address the issues before they occur for any current or new customers. Another driving factor for the owners is their recognition that retaining an existing customer costs the business significantly less in marketing and labor expenses than those expenses incurred during the onboarding process for new customers.
 
 ## Data Understanding
 
 The data used in this project is sourced from [Kaggle](https://www.kaggle.com/datasets/radheshyamkollipara/bank-customer-churn).
 
-The dataset contains 18 columns with 10,000 unique bank customer records. Generally speaking, the columns in this dataset contain various demographic measures, like age and country where the customer is living, along with recorded metrics that the bank is tracking like the balance in each customer's account and how long the customer has held an account at the bank. A detailed description of each column was provided by the auther of the dataset, and I have copied it below:
+The dataset contains 18 columns with 10,000 unique bank customer records. The columns in this dataset mostly contain demographic measures, like age and country where the customer is living, along with recorded metrics that the bank is tracking like the balance in each customer's account and how long the customer has held an account at the bank. A detailed description of each column was provided by the auther of the dataset, and I have copied it in the Data Understanding section of the [Final_Notebook](Final_Notebook.ipynb), along with my own interpretations.  
 
-#### Column Descriptions - from Kaggle:
-- RowNumber—corresponds to the record (row) number and has no effect on the output.
-- CustomerId—contains random values and has no effect on customer leaving the bank.
-- Surname—the surname of a customer has no impact on their decision to leave the bank.
-- CreditScore—can have an effect on customer churn, since a customer with a higher credit score is less likely to leave the bank.
-- Geography—a customer’s location can affect their decision to leave the bank.
-- Gender—it’s interesting to explore whether gender plays a role in a customer leaving the bank.
-- Age—this is certainly relevant, since older customers are less likely to leave their bank than younger ones.
-- Tenure—refers to the number of years that the customer has been a client of the bank. Normally, older clients are more loyal and less likely to leave a bank.
-- Balance—also a very good indicator of customer churn, as people with a higher balance in their accounts are less likely to leave the bank compared to those with lower balances.
-- NumOfProducts—refers to the number of products that a customer has purchased through the bank.
-- HasCrCard—denotes whether or not a customer has a credit card. This column is also relevant, since people with a credit card are less likely to leave the bank.
-- IsActiveMember—active customers are less likely to leave the bank.
-- EstimatedSalary—as with balance, people with lower salaries are more likely to leave the bank compared to those with higher salaries.
-- Exited—whether or not the customer left the bank.
-- Complain—customer has complaint or not.
-- Satisfaction Score—Score provided by the customer for their complaint resolution.
-- Card Type—type of card hold by the customer.
-- Points Earned—the points earned by the customer for using credit card.
-
-## Data Preparation
+## Data Preparation and EDA
 
 ### Exploratory Data Analysis Results
 - The data does not have any null values to address.
@@ -54,8 +39,6 @@ The dataset contains 18 columns with 10,000 unique bank customer records. Genera
 - I dropped redundant columns next - those that essentially repeated the index or had duplicate values.
 - With all the remaining columns, I made observations by plotting the distirbution of values and/or checking the value counts for categorical and binary columns.
 
-## Modeling
-
 #### Target Identified: the 'Exited' column.
 - A 0 represents a customer that DID NOT leave the bank.
     - It appears that about 80% of customers have remained at the bank.
@@ -67,6 +50,8 @@ The dataset contains 18 columns with 10,000 unique bank customer records. Genera
 
 #### Splitting Categorical and Numeric Data
 - Numeric data is readily able to be used in a model, whereas categorical data will require preporcessing. For the first model iterations, I will only use numeric data to get a baseline model.
+
+## Baseline Understanding: Building a Dummy Model
 
 ### Model 1: Dummy - Numeric Data Only
 The X values, or features, in this first model represent the independent variables that we want to measure as they effect our target value: y. Previously, the 'Exited' column was identified as the target, and in order to analysis the effect the features have on this target, we must isolate this column and assign it 'y'.
